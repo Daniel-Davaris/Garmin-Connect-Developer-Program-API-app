@@ -19,7 +19,7 @@ app = Flask(__name__)
 consumer_key = os.environ.get('consumer_key')
 consumer_secret = os.environ.get('consumer_secret')
 
-callback_url = "gcdp.azurewebsites.net/callback"
+callback_url = "https://gcdp.azurewebsites.net/callback"
 
 request_token_secret_dict = {}
 

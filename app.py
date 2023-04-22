@@ -12,7 +12,7 @@ import urllib.parse
 import os
 import json
 from requests_oauthlib import OAuth1Session
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, render_template, session
 
 app = Flask(__name__)
 
@@ -123,20 +123,69 @@ def get_access_token():
     if not access_token or not access_token_secret:
         return "Access token or access token secret not found", 400
 
-    return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
+    # Add the access token and secret to the session object
+    session['access_token'] = access_token
+    session['access_token_secret'] = access_token_secret
+
+    return redirect('/sleeps')
+   # return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
 
 
-@app.route('/health/dailies', methods=['POST'])
-def receive_dailies_data():
-    # Extract the data from the request body
-    data = request.json
+@app.route("/sleeps")
+def get_sleep_data():
+    # Get access token and secret from session or database
+    access_token = session.get('access_token')
+    access_token_secret = session.get('access_token_secret')
 
-    # You can now use the data as needed
-    # For example, print the first entry in the array of dailies data
-    print(data[0])
+    # API endpoint URL
+    url = 'https://healthapi.garmin.com/wellness-api/rest/sleeps'
 
-    # Return a 200 status code to indicate success
-    return ('', 200)
+    # OAuth parameters
+    params = {
+        'oauth_consumer_key': consumer_key,
+        'oauth_nonce': str(random.randint(0, 1e16)),
+        'oauth_signature_method': 'HMAC-SHA1',
+        'oauth_timestamp': str(int(time.time())),
+        'oauth_version': '1.0',
+        'start': '0',
+        'limit': '10'
+    }
+
+    # Generate signature base string
+    base_string = '&'.join([
+        'GET',
+        requests.utils.quote(url, safe=''),
+        requests.utils.quote('&'.join([
+            f"{requests.utils.quote(k, safe='')}"
+            f"={requests.utils.quote(params[k], safe='')}"
+            for k in sorted(params)
+        ]), safe='')
+    ])
+
+    # Generate signature
+    key = f"{requests.utils.quote(consumer_secret, safe='')}&{requests.utils.quote(access_token_secret, safe='')}"
+    signature = hmac.new(
+        key.encode('utf-8'),
+        base_string.encode('utf-8'),
+        hashlib.sha1
+    ).digest()
+    params['oauth_signature'] = base64.b64encode(signature).decode('utf-8')
+
+    # Set headers
+    headers = {
+        'Authorization': 'OAuth ' + ', '.join([
+            f"{k}=\"{requests.utils.quote(params[k], safe='')}\","
+            for k in sorted(params)
+        ])[:-1]
+    }
+
+    # Make API request
+    response = requests.get(url, headers=headers)
+
+    # Display response data in the web page
+    sleeps_data = response.json()
+    return render_template('sleeps.html', sleeps=sleeps_data)
+
 
 if __name__ == "__main__":
     app.run()

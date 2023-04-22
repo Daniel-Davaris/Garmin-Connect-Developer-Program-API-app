@@ -122,7 +122,21 @@ def get_access_token():
     if not access_token or not access_token_secret:
         return "Access token or access token secret not found", 400
 
-    return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
+    # Use the access token to make authenticated API requests
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    url = "https://api.garmin.com/wellness-api/rest/HEALTH-Sleeps/daily/{date}"
+    date = "2023-04-21"  # Replace with the date you want to retrieve data for
+    response = requests.get(url.format(date=date), headers=headers)
+
+    if response.status_code != 200:
+        return f"Failed to retrieve data from API: {response.text}", 400
+
+    # Process the API response here
+    data = response.json()
+
+    return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}<br>Data: {data}"
 
 
 if __name__ == "__main__":

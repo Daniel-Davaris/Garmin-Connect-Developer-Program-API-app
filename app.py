@@ -187,7 +187,9 @@ def get_sleep_data():
 
     # Display response data in the web page
     sleeps_data = response.json()
-    return render_template('sleeps.html', sleeps=sleeps_data)
+    print(sleeps_data)
+    return f"sleeps_data: {sleeps_data}<br>"
+   # return render_template('sleeps.html', sleeps=sleeps_data)
 
 
 if __name__ == "__main__":

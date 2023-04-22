@@ -9,15 +9,17 @@ import time
 import random
 import base64
 import urllib.parse
+import os
 from requests_oauthlib import OAuth1Session
 from flask import Flask, redirect, request, render_template
 
 app = Flask(__name__)
 
 # Consumer key and secret
-from config import *
+consumer_key = os.environ.get('consumer_key')
+consumer_secret = os.environ.get('consumer_secret')
 
-callback_url = "http://127.0.0.1:5000/callback"
+callback_url = "gcdp.azurewebsites.net/callback"
 
 request_token_secret_dict = {}
 

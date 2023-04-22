@@ -10,6 +10,7 @@ import random
 import base64
 import urllib.parse
 import os
+import json
 from requests_oauthlib import OAuth1Session
 from flask import Flask, redirect, request, render_template
 
@@ -124,6 +125,18 @@ def get_access_token():
 
     return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
 
+
+@app.route('/health/dailies', methods=['POST'])
+def receive_dailies_data():
+    # Extract the data from the request body
+    data = request.json
+
+    # You can now use the data as needed
+    # For example, print the first entry in the array of dailies data
+    print(data[0])
+
+    # Return a 200 status code to indicate success
+    return ('', 200)
 
 if __name__ == "__main__":
     app.run()

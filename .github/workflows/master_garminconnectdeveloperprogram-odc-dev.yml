@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'GarminConnectDeveloperProgram-ODC-dev'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E61999D6A59B4B36AF956295F83561E9 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DE4E9FB7E8EE41CF9CB10F0EBA65150B }}

@@ -184,10 +184,10 @@ def get_sleep_data():
 
     # Make API request
     response = requests.get(url, headers=headers)
-
+    print("response: ",response)
     # Display response data in the web page
     sleeps_data = response.json()
-    print(sleeps_data)
+    
     return f"sleeps_data: {sleeps_data}<br>"
    # return render_template('sleeps.html', sleeps=sleeps_data)
 

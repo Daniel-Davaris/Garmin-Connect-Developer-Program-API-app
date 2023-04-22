@@ -10,7 +10,7 @@ import random
 import base64
 import urllib.parse
 from requests_oauthlib import OAuth1Session
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template
 
 app = Flask(__name__)
 
@@ -22,6 +22,10 @@ callback_url = "http://127.0.0.1:5000/callback"
 request_token_secret_dict = {}
 
 @app.route("/")
+def home():
+    return render_template('index.html')
+    
+@app.route("/request")
 def generate_user_authorization_link():
     
     # API endpoint URL

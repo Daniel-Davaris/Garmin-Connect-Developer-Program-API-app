@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/7cad3fae-a6e3-4e4c-bfab-ddf421e4f412/resourceGroups/OpenDataConnect-Garmin_group/providers/Microsoft.Web/sites/OpenDataConnect-Garmin",
+    "appService.deploySubpath": "."
+}

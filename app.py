@@ -1,3 +1,7 @@
+# Daniel Davaris for Open Data Connect Pty Ltd
+# 04/2023
+# Garmin Connect Developer Program app/API
+
 import requests
 import hmac
 import hashlib
@@ -5,12 +9,20 @@ import time
 import random
 import base64
 import urllib.parse
+from requests_oauthlib import OAuth1Session
+from flask import Flask, redirect, request
+
+app = Flask(__name__)
 
 # Consumer key and secret
 from config import *
-callback_url = "https://www.opendataconnect.com"
 
-def generate_user_authorization_link(callback_url,consumer_key,consumer_secret):
+callback_url = "http://127.0.0.1:5000/callback"
+
+request_token_secret_dict = {}
+
+@app.route("/")
+def generate_user_authorization_link():
     
     # API endpoint URL
     url = 'https://connectapi.garmin.com/oauth-service/oauth/request_token'
@@ -72,5 +84,40 @@ def generate_user_authorization_link(callback_url,consumer_key,consumer_secret):
     authorize_url = f"https://connect.garmin.com/oauthConfirm?oauth_token={request_token}&oauth_callback={urllib.parse.quote(callback_url)}"
     print("\nUser authorization link:\n",authorize_url,"\n")
 
+    request_token_secret_dict[request_token] = request_token_secret
+    return redirect(authorize_url)
+    
 
-generate_user_authorization_link(callback_url,consumer_key,consumer_secret)
+
+@app.route("/callback")
+def get_access_token():
+    global request_token_secret_dict
+    ACCESS_TOKEN_URL = "https://connectapi.garmin.com/oauth-service/oauth/access_token"
+    
+    # Obtain the request token and secret from the query parameters
+    request_token = request.args.get("oauth_token")
+    request_token_secret = request_token_secret_dict.get(request_token)
+    if not request_token_secret:
+        return "Request token secret not found", 400
+
+    oauth = OAuth1Session(
+        consumer_key,
+        client_secret=consumer_secret,
+        resource_owner_key=request_token,
+        resource_owner_secret=request_token_secret,
+        verifier=request.args.get("oauth_verifier"),
+    )
+
+    response = oauth.fetch_access_token(ACCESS_TOKEN_URL)
+
+    access_token = response.get("oauth_token")
+    access_token_secret = response.get("oauth_token_secret")
+
+    if not access_token or not access_token_secret:
+        return "Access token or access token secret not found", 400
+
+    return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
+
+
+if __name__ == "__main__":
+    app.run()

@@ -15,6 +15,8 @@ from requests_oauthlib import OAuth1Session
 from flask import Flask, redirect, request, render_template, session
 
 app = Flask(__name__)
+app.secret_key = 'lotus'
+
 
 # Consumer key and secret
 consumer_key = os.environ.get('consumer_key')
@@ -23,6 +25,7 @@ consumer_secret = os.environ.get('consumer_secret')
 callback_url = "https://gcdp.azurewebsites.net/callback"
 
 request_token_secret_dict = {}
+
 
 @app.route("/")
 def home():

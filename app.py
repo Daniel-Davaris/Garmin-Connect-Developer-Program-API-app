@@ -189,20 +189,22 @@ def get_data():
         return "Error fetching respiration data", 500
     logging.info("Respiration data fetched successfully")
 
-    return f'Respiration data {respiration_data}'
+    #return f'Respiration data {respiration_data}'
+   
+    logging.info("Sending respiration data to /HEALTH-Respiration...")
+    response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data,timeout=20)
+    if response.status_code == 200:
+        logging.info("Respiration data sent successfully")
+        return "Respiration data sent successfully"
+    else:
+        logging.error(f"Error sending respiration data: {response.text}")
+        return f"Error sending respiration data: {response.text}", 500
+    
+    
 
-    # logging.info("Sending respiration data to /HEALTH-Respiration...")
-    # response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)
-    # if response.status_code == 200:
-    #     logging.info("Respiration data sent successfully")
-    #     return "Respiration data sent successfully"
-    # else:
-    #     logging.error(f"Error sending respiration data: {response.text}")
-    #     return f"Error sending respiration data: {response.text}", 500
 
 
-
-@app.route("/HEALTH-Respiration", methods=['GET', 'POST'])
+@app.route("/HEALTH-Respiration", methods=['POST'])
 def receive_respiration_summaries():
     data = request.json
 

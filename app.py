@@ -206,7 +206,7 @@ def get_data():
     return f'Respiration data {respiration_data}'
 
 @app.route("/data_all")
-def get_data():
+def get_data_all():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 

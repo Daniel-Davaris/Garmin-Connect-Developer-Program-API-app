@@ -132,8 +132,6 @@ def get_access_token():
 
     print("\naccess_token:\n",access_token)
     print("\naccess_token_secret:\n",access_token_secret)
-    #return redirect('/sleeps')
-    return f"Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
 @app.route("/sleeps")

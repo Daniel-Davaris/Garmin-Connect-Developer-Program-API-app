@@ -75,9 +75,10 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
 
     if response.status_code == 202:
         print("Backfill data request accepted")
+        return f'Backfill data request accepted:{response.text}'
     else:
         print("Error requesting respiration backfill data:", response.text)
-        return None
+        return f'Error requesting respiration backfill data:{response.text}'
 
 
 
@@ -215,15 +216,7 @@ def get_data_all():
     end_time = int(time.time()) - 86400  # 1 day ago
     request_respiration_backfill_data(access_token, access_token_secret, start_time, end_time)
     
-    logging.info("Fetching respiration data...")
-    respiration_data = request_respiration_data(access_token, access_token_secret)
-    
-    if respiration_data is None:
-        return "Error fetching respiration data", 500
-    logging.info("Respiration data fetched successfully")
-
-    return f'Respiration data {respiration_data}'
-
+    return "Done!"
 
 @app.route("/HEALTH-Respiration", methods=['POST'])
 def receive_respiration_summaries():

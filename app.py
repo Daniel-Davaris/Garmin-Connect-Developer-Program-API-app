@@ -27,6 +27,33 @@ callback_url = "https://gcdp.azurewebsites.net/callback"
 
 request_token_secret_dict = {}
 
+def request_respiration_data(access_token, access_token_secret):
+    consumer_key = os.environ.get('consumer_key')
+    consumer_secret = os.environ.get('consumer_secret')
+    
+    # Configure OAuth1Session with the access token and secret
+    oauth = OAuth1Session(
+        consumer_key,
+        client_secret=consumer_secret,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+
+    # Prepare the request parameters
+    start_time = int(time.time()) - 86400
+    end_time = int(time.time())
+
+    url = f"https://apis.garmin.com/wellness-api/rest/respiration?uploadStartTimeInSeconds={start_time}&uploadEndTimeInSeconds={end_time}"
+    
+    # Make a request to the Garmin API
+    response = oauth.get(url)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error getting respiration data:", response.text)
+        return None
+
 
 @app.route("/")
 def home():
@@ -135,16 +162,31 @@ def get_access_token():
     print("\naccess_token_secret:\n",access_token_secret)
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
+# @app.route("/data")
+# def get_data():
+#     # Get access token and secret from session or database
+#     # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
+#     #access_token = session.get('access_token')
+#     #access_token_secret = session.get('access_token_secret')
+#     access_token = os.environ.get('julian_access_token')
+#     access_token_secret = os.environ.get('julian_access_token_secret')
+
+#     return f'Julians access token {access_token}'
 @app.route("/data")
 def get_data():
-    # Get access token and secret from session or database
-    # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
-    #access_token = session.get('access_token')
-    #access_token_secret = session.get('access_token_secret')
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    return f'Julians access token {access_token}'
+    respiration_data = request_respiration_data(access_token, access_token_secret)
+    if respiration_data is None:
+        return "Error fetching respiration data", 500
+
+    # Send the respiration data to your route
+    response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)
+    if response.status_code == 200:
+        return "Respiration data sent successfully"
+    else:
+        return f"Error sending respiration data: {response.text}", 500
 
 
 @app.route("/HEALTH-Respiration", methods=["POST"])

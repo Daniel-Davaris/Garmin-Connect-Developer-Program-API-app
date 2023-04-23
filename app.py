@@ -134,17 +134,48 @@ def get_access_token():
     print("\naccess_token_secret:\n",access_token_secret)
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
+# @app.route("/data")
+# def get_data():
+#     # Get access token and secret from session or database
+#     # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
+#     #access_token = session.get('access_token')
+#     #access_token_secret = session.get('access_token_secret')
+#     access_token = os.environ.get('julian_access_token')
+#     access_token_secret = os.environ.get('julian_access_token_secret')
+
+#     return f'Julians access token {access_token}'
+
 @app.route("/data")
-def get_sleep_data():
+def get_data():
     # Get access token and secret from session or database
-    # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
-    #access_token = session.get('access_token')
-    #access_token_secret = session.get('access_token_secret')
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    return f'Julians access token {access_token}'
+    # Define the API endpoint and date for the request
+    api_url = "https://connectapi.garmin.com/wellness-service/wellness/dailySummary"
+    request_date = date.today().strftime("%Y-%m-%d")
+    request_url = f"{api_url}?date={request_date}"
 
+    # Create an OAuth1 session using the access_token and access_token_secret
+    oauth = OAuth1Session(
+        consumer_key,
+        client_secret=consumer_secret,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+
+    # Make a GET request to the Garmin Connect API
+    response = oauth.get(request_url)
+
+    # Check if the response is successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = json.loads(response.text)
+        # Render the data as JSON in the response (for demonstration purposes)
+        return json.dumps(data, indent=2)
+    else:
+        # If the response is unsuccessful, show the error message
+        return f"Error fetching data: {response.status_code} - {response.text}"
 
 if __name__ == "__main__":
     app.run()

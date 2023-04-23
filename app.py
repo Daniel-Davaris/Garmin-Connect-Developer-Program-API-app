@@ -59,6 +59,9 @@ def request_respiration_data(access_token, access_token_secret):
 
 
 def request_respiration_backfill_data(access_token, access_token_secret, start_time, end_time):
+    consumer_key = os.environ.get('consumer_key')
+    consumer_secret = os.environ.get('consumer_secret')
+    
     oauth = OAuth1Session(
         consumer_key,
         client_secret=consumer_secret,
@@ -202,7 +205,7 @@ def get_data():
 
     return f'Respiration data {respiration_data}'
 
-@app.route("/data2")
+@app.route("/data_all")
 def get_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')

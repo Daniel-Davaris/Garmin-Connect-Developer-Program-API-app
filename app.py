@@ -143,7 +143,7 @@ def get_sleep_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    return f"julian access token: ",{access_token},"julian access token secret",{access_token_secret}
+    return access_token,access_token_secret
 
 
 if __name__ == "__main__":

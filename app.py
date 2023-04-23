@@ -6,6 +6,7 @@ import requests
 import hmac
 import hashlib
 import time
+from datetime import date
 import random
 import base64
 import urllib.parse
@@ -150,7 +151,7 @@ def get_data():
     # Get access token and secret from session or database
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
-
+    # test
     # Define the API endpoint and date for the request
     api_url = "https://connectapi.garmin.com/wellness-service/wellness/dailySummary"
     request_date = date.today().strftime("%Y-%m-%d")

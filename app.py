@@ -139,8 +139,11 @@ def get_access_token():
 @app.route("/sleeps")
 def get_sleep_data():
     # Get access token and secret from session or database
-    access_token = session.get('access_token')
-    access_token_secret = session.get('access_token_secret')
+    # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
+    #access_token = session.get('access_token')
+    #access_token_secret = session.get('access_token_secret')
+    access_token = os.environ.get('julian_access_token')
+    access_token_secret = os.environ.get('julian_access_token_secret')
 
     # API endpoint URL
     url = 'https://healthapi.garmin.com/wellness-api/rest/sleeps'

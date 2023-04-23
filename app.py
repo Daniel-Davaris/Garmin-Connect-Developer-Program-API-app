@@ -58,6 +58,27 @@ def request_respiration_data(access_token, access_token_secret):
         return None
 
 
+def request_respiration_backfill_data(access_token, access_token_secret, start_time, end_time):
+    oauth = OAuth1Session(
+        consumer_key,
+        client_secret=consumer_secret,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+
+    url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"
+    
+    response = oauth.get(url)
+
+    if response.status_code == 202:
+        print("Backfill data request accepted")
+    else:
+        print("Error requesting respiration backfill data:", response.text)
+        return None
+
+
+
+
 @app.route("/")
 def home():
     return render_template('index.html')
@@ -165,16 +186,6 @@ def get_access_token():
     print("\naccess_token_secret:\n",access_token_secret)
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
-# @app.route("/data")
-# def get_data():
-#     # Get access token and secret from session or database
-#     # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
-#     #access_token = session.get('access_token')
-#     #access_token_secret = session.get('access_token_secret')
-#     access_token = os.environ.get('julian_access_token')
-#     access_token_secret = os.environ.get('julian_access_token_secret')
-
-#     return f'Julians access token {access_token}'
 
 @app.route("/data")
 def get_data():
@@ -189,19 +200,26 @@ def get_data():
         return "Error fetching respiration data", 500
     logging.info("Respiration data fetched successfully")
 
-    #return f'Respiration data {respiration_data}'
-   
-    logging.info("Sending respiration data to /HEALTH-Respiration...")
-    response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data,timeout=20)
-    if response.status_code == 200:
-        logging.info("Respiration data sent successfully")
-        return "Respiration data sent successfully"
-    else:
-        logging.error(f"Error sending respiration data: {response.text}")
-        return f"Error sending respiration data: {response.text}", 500
-    
-    
+    return f'Respiration data {respiration_data}'
 
+@app.route("/data2")
+def get_data():
+    access_token = os.environ.get('julian_access_token')
+    access_token_secret = os.environ.get('julian_access_token_secret')
+
+    # Request backfill data
+    start_time = int(time.time()) - (86400 * 10)  # 10 days ago
+    end_time = int(time.time()) - 86400  # 1 day ago
+    request_respiration_backfill_data(access_token, access_token_secret, start_time, end_time)
+    
+    logging.info("Fetching respiration data...")
+    respiration_data = request_respiration_data(access_token, access_token_secret)
+    
+    if respiration_data is None:
+        return "Error fetching respiration data", 500
+    logging.info("Respiration data fetched successfully")
+
+    return f'Respiration data {respiration_data}'
 
 
 @app.route("/HEALTH-Respiration", methods=['POST'])
@@ -225,9 +243,6 @@ def display_respiration_data():
         return "No respiration data available", 404
     return render_template("display_respiration_data.html", respiration_data=respiration_data)
 
-@app.route("/test")
-def test_route():
-    return "Test route is working"
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

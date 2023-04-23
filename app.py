@@ -70,7 +70,7 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
     )
 
 
-    callback_url = "https://gcdp.azurewebsites.net/backfill_respiration_data"
+    callback_url = "https://gcdp.azurewebsites.net/HEALTH-Respiration"
     url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}&callbackEndpoint={urllib.parse.quote(callback_url)}"
     
 
@@ -225,7 +225,7 @@ def get_data_all():
 
 @app.route("/HEALTH-Respiration", methods=['POST'])
 def receive_respiration_summaries():
-    data = request.json
+    data = request.get_json()
 
     # Check if the data is a dictionary, otherwise set an empty dictionary as a fallback
     if not isinstance(data, dict):
@@ -235,7 +235,8 @@ def receive_respiration_summaries():
     session["respiration_data"] = respiration_data
     
     return jsonify({"message": "Respiration summaries data received successfully"})
- 
+
+
 
 @app.route("/display_respiration_data")
 def display_respiration_data():
@@ -254,17 +255,35 @@ def display_respiration_data():
     return render_template("display_respiration_data.html", respiration_data=respiration_data)
 
 
-
-
-
 @app.route("/backfill_respiration_data", methods=['POST'])
 def backfill_respiration_data():
     data = request.json
-    if not data:
-        return "No data received", 400
-    session["backfill_respiration_data"] = data
+
+    # Check if the data is a dictionary, otherwise set an empty dictionary as a fallback
+    if not isinstance(data, dict):
+        data = {}
+
+    respiration_data = data.get("respirationData", {})
+    session["backfill_respiration_data"] = respiration_data
+
     return jsonify({"message": "Backfill respiration data received successfully"})
 
+
+@app.route("/display_backfill_respiration_data")
+def display_backfill_respiration_data():
+    backfill_respiration_data_raw = session.get("backfill_respiration_data", {})
+    if not backfill_respiration_data_raw:
+        return "No backfill respiration data available", 404
+
+    backfill_respiration_data = [
+        {
+            "timestamp": item["timestamp"],
+            "respirationRate": item["respirationRate"]
+        }
+        for item in backfill_respiration_data_raw
+    ]
+
+    return render_template("display_backfill_respiration_data.html", backfill_respiration_data=backfill_respiration_data)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -233,7 +233,13 @@ def receive_respiration_summaries():
 
     respiration_data = data.get("respirationData", {})
     session["respiration_data"] = respiration_data
-    
+
+    # Store backfill data if available
+    if "backfill" in data:
+        backfill_respiration_data = data.get("backfill", {}).get("respirationData", {})
+        session["backfill_respiration_data"] = backfill_respiration_data
+        requests.post("https://gcdp.azurewebsites.net/backfill_respiration_data", json={"respirationData": backfill_respiration_data})
+
     return jsonify({"message": "Respiration summaries data received successfully"})
 
 

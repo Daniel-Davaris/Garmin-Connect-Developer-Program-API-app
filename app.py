@@ -239,7 +239,7 @@ def receive_respiration_summaries():
 
 @app.route("/display_respiration_data")
 def display_respiration_data():
-    respiration_data_raw = session.get("backfill_respiration_data", {})
+    respiration_data_raw = session.get("respiration_data", {})
     if not respiration_data_raw:
         return "No respiration data available", 404
 
@@ -252,6 +252,8 @@ def display_respiration_data():
     ]
 
     return render_template("display_respiration_data.html", respiration_data=respiration_data)
+
+
 
 
 

@@ -200,10 +200,16 @@ def get_data():
 @app.route("/HEALTH-Respiration", methods=["POST"])
 def receive_respiration_summaries():
     data = request.json
+
+    # Check if the data is a dictionary, otherwise set an empty dictionary as a fallback
+    if not isinstance(data, dict):
+        data = {}
+
     respiration_data = data.get("respirationData", {})
     session["respiration_data"] = respiration_data
+    
     return jsonify({"message": "Respiration summaries data received successfully"})
-
+ 
 
 @app.route("/display_respiration_data")
 def display_respiration_data():

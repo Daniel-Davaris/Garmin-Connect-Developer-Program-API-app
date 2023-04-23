@@ -51,7 +51,7 @@ def request_respiration_data(access_token, access_token_secret):
     response = oauth.get(url)
 
     if response.status_code == 200:
-        print("RRRRRRRRRRRRRRRRRRRRRRRRRR: ",response.json())
+        print("Data: ",response.json())
         return response.json()
     else:
         print("Error getting respiration data:", response.text)
@@ -184,10 +184,12 @@ def get_data():
     
     logging.info("Fetching respiration data...")
     respiration_data = request_respiration_data(access_token, access_token_secret)
-    return f'Julians access token {access_token}'
-    # if respiration_data is None:
-    #     return "Error fetching respiration data", 500
-    # logging.info("Respiration data fetched successfully")
+    
+    if respiration_data is None:
+        return "Error fetching respiration data", 500
+    logging.info("Respiration data fetched successfully")
+
+    return f'Respiration data {respiration_data}'
 
     # logging.info("Sending respiration data to /HEALTH-Respiration...")
     # response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)

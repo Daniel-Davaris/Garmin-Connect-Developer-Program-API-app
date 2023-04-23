@@ -13,7 +13,7 @@ import urllib.parse
 import os
 import json
 from requests_oauthlib import OAuth1Session
-from flask import Flask, redirect, request, render_template, session
+from flask import Flask, redirect, request, render_template, session, jsonify 
 
 app = Flask(__name__)
 app.secret_key = 'lotus'
@@ -135,47 +135,33 @@ def get_access_token():
     print("\naccess_token_secret:\n",access_token_secret)
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
-# @app.route("/data")
-# def get_data():
-#     # Get access token and secret from session or database
-#     # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
-#     #access_token = session.get('access_token')
-#     #access_token_secret = session.get('access_token_secret')
-#     access_token = os.environ.get('julian_access_token')
-#     access_token_secret = os.environ.get('julian_access_token_secret')
-
-#     return f'Julians access token {access_token}'
-
 @app.route("/data")
 def get_data():
     # Get access token and secret from session or database
+    # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
+    #access_token = session.get('access_token')
+    #access_token_secret = session.get('access_token_secret')
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    # Define the API endpoint for the request
-    api_url = "https://connectapi.garmin.com/activitylist-service/activities"
-    request_url = f"{api_url}?start=0&limit=10"
+    return f'Julians access token {access_token}'
 
-    # Create an OAuth1 session using the access_token and access_token_secret
-    oauth = OAuth1Session(
-        consumer_key,
-        client_secret=consumer_secret,
-        resource_owner_key=access_token,
-        resource_owner_secret=access_token_secret
-    )
 
-    # Make a GET request to the Garmin Connect API
-    response = oauth.get(request_url)
+@app.route("/HEALTH-Respiration", methods=["POST"])
+def receive_respiration_summaries():
+    data = request.json
+    respiration_data = data.get("respirationData", {})
+    session["respiration_data"] = respiration_data
+    return jsonify({"message": "Respiration summaries data received successfully"})
 
-    # Check if the response is successful
-    if response.status_code == 200:
-        # Parse the JSON response
-        data = json.loads(response.text)
-        # Render the data as JSON in the response (for demonstration purposes)
-        return json.dumps(data, indent=2)
-    else:
-        # If the response is unsuccessful, show the error message
-        return f"Error fetching data: {response.status_code} - {response.text}"
+
+@app.route("/display_respiration_data")
+def display_respiration_data():
+    respiration_data = session.get("respiration_data", {})
+    if not respiration_data:
+        return "No respiration data available", 404
+    return render_template("display_respiration_data.html", respiration_data=respiration_data)
+
 
 
 if __name__ == "__main__":

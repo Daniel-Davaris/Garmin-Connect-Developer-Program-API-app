@@ -51,6 +51,7 @@ def request_respiration_data(access_token, access_token_secret):
     response = oauth.get(url)
 
     if response.status_code == 200:
+        print("RRRRRRRRRRRRRRRRRRRRRRRRRR: ",response.json())
         return response.json()
     else:
         print("Error getting respiration data:", response.text)
@@ -179,10 +180,11 @@ def get_access_token():
 def get_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
+
     
+    logging.info("Fetching respiration data...")
+    respiration_data = request_respiration_data(access_token, access_token_secret)
     return f'Julians access token {access_token}'
-    # logging.info("Fetching respiration data...")
-    # respiration_data = request_respiration_data(access_token, access_token_secret)
     # if respiration_data is None:
     #     return "Error fetching respiration data", 500
     # logging.info("Respiration data fetched successfully")

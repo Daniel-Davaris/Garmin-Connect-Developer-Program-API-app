@@ -134,7 +134,7 @@ def get_access_token():
     print("\naccess_token_secret:\n",access_token_secret)
     return render_template('got_token.html', access_token=access_token,access_token_secret=access_token_secret)
 
-@app.route("/sleeps")
+@app.route("/data")
 def get_sleep_data():
     # Get access token and secret from session or database
     # Later on this will be setup to the user that authenticates but for now it is just going to connect to a single user for testing 
@@ -143,56 +143,7 @@ def get_sleep_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    # API endpoint URL
-    url = 'https://healthapi.garmin.com/wellness-api/rest/sleeps'
-
-    # OAuth parameters
-    params = {
-        'oauth_consumer_key': consumer_key,
-        'oauth_nonce': str(random.randint(0, 1e16)),
-        'oauth_signature_method': 'HMAC-SHA1',
-        'oauth_timestamp': str(int(time.time())),
-        'oauth_version': '1.0',
-        'start': '0',
-        'limit': '10'
-    }
-
-    # Generate signature base string
-    base_string = '&'.join([
-        'GET',
-        requests.utils.quote(url, safe=''),
-        requests.utils.quote('&'.join([
-            f"{requests.utils.quote(k, safe='')}"
-            f"={requests.utils.quote(params[k], safe='')}"
-            for k in sorted(params)
-        ]), safe='')
-    ])
-
-    # Generate signature
-    key = f"{requests.utils.quote(consumer_secret, safe='')}&{requests.utils.quote(access_token_secret, safe='')}"
-    signature = hmac.new(
-        key.encode('utf-8'),
-        base_string.encode('utf-8'),
-        hashlib.sha1
-    ).digest()
-    params['oauth_signature'] = base64.b64encode(signature).decode('utf-8')
-
-    # Set headers
-    headers = {
-        'Authorization': 'OAuth ' + ', '.join([
-            f"{k}=\"{requests.utils.quote(params[k], safe='')}\","
-            for k in sorted(params)
-        ])[:-1]
-    }
-
-    # Make API request
-    response = requests.get(url, headers=headers)
-    print("response: ",response)
-    # Display response data in the web page
-    sleeps_data = response.json()
-    
-    return f"sleeps_data: {sleeps_data}<br>"
-   # return render_template('sleeps.html', sleeps=sleeps_data)
+    return f"julian access token: ",{access_token},"julian access token secret",{access_token_secret}
 
 
 if __name__ == "__main__":

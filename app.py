@@ -202,7 +202,7 @@ def get_data():
 
 
 
-@app.route("/HEALTH-Respiration", methods=["POST"])
+@app.route("/HEALTH-Respiration", methods=['GET', 'POST'])
 def receive_respiration_summaries():
     data = request.json
 

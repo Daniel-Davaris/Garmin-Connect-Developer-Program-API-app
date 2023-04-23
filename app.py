@@ -151,11 +151,10 @@ def get_data():
     # Get access token and secret from session or database
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
-    # test
-    # Define the API endpoint and date for the request
-    api_url = "https://connectapi.garmin.com/wellness-service/wellness/dailySummary"
-    request_date = date.today().strftime("%Y-%m-%d")
-    request_url = f"{api_url}?date={request_date}"
+
+    # Define the API endpoint for the request
+    api_url = "https://connectapi.garmin.com/activitylist-service/activities"
+    request_url = f"{api_url}?start=0&limit=10"
 
     # Create an OAuth1 session using the access_token and access_token_secret
     oauth = OAuth1Session(
@@ -177,6 +176,7 @@ def get_data():
     else:
         # If the response is unsuccessful, show the error message
         return f"Error fetching data: {response.status_code} - {response.text}"
+
 
 if __name__ == "__main__":
     app.run()

@@ -179,21 +179,22 @@ def get_access_token():
 def get_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
+    
+    return f'Julians access token {access_token}'
+    # logging.info("Fetching respiration data...")
+    # respiration_data = request_respiration_data(access_token, access_token_secret)
+    # if respiration_data is None:
+    #     return "Error fetching respiration data", 500
+    # logging.info("Respiration data fetched successfully")
 
-    logging.info("Fetching respiration data...")
-    respiration_data = request_respiration_data(access_token, access_token_secret)
-    if respiration_data is None:
-        return "Error fetching respiration data", 500
-    logging.info("Respiration data fetched successfully")
-
-    logging.info("Sending respiration data to /HEALTH-Respiration...")
-    response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)
-    if response.status_code == 200:
-        logging.info("Respiration data sent successfully")
-        return "Respiration data sent successfully"
-    else:
-        logging.error(f"Error sending respiration data: {response.text}")
-        return f"Error sending respiration data: {response.text}", 500
+    # logging.info("Sending respiration data to /HEALTH-Respiration...")
+    # response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)
+    # if response.status_code == 200:
+    #     logging.info("Respiration data sent successfully")
+    #     return "Respiration data sent successfully"
+    # else:
+    #     logging.error(f"Error sending respiration data: {response.text}")
+    #     return f"Error sending respiration data: {response.text}", 500
 
 
 

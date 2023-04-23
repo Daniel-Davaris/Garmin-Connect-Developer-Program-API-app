@@ -69,7 +69,12 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
         resource_owner_secret=access_token_secret
     )
 
-    url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"
+
+    callback_url = "https://gcdp.azurewebsites.net/backfill_respiration_data"
+    url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}&callbackEndpoint={urllib.parse.quote(callback_url)}"
+    
+
+   # url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"
     
     response = oauth.get(url)
 
@@ -234,10 +239,29 @@ def receive_respiration_summaries():
 
 @app.route("/display_respiration_data")
 def display_respiration_data():
-    respiration_data = session.get("respiration_data", {})
-    if not respiration_data:
+    respiration_data_raw = session.get("backfill_respiration_data", {})
+    if not respiration_data_raw:
         return "No respiration data available", 404
+
+    respiration_data = [
+        {
+            "timestamp": item["timestamp"],
+            "respirationRate": item["respirationRate"]
+        }
+        for item in respiration_data_raw
+    ]
+
     return render_template("display_respiration_data.html", respiration_data=respiration_data)
+
+
+
+@app.route("/backfill_respiration_data", methods=['POST'])
+def backfill_respiration_data():
+    data = request.json
+    if not data:
+        return "No data received", 400
+    session["backfill_respiration_data"] = data
+    return jsonify({"message": "Backfill respiration data received successfully"})
 
 
 if __name__ == "__main__":

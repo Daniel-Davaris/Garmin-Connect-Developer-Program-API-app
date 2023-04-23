@@ -14,6 +14,8 @@ import os
 import json
 from requests_oauthlib import OAuth1Session
 from flask import Flask, redirect, request, render_template, session, jsonify 
+import logging
+
 
 app = Flask(__name__)
 app.secret_key = 'lotus'
@@ -178,19 +180,19 @@ def get_data():
     access_token = os.environ.get('julian_access_token')
     access_token_secret = os.environ.get('julian_access_token_secret')
 
-    print("Fetching respiration data...")
+    logging.info("Fetching respiration data...")
     respiration_data = request_respiration_data(access_token, access_token_secret)
     if respiration_data is None:
         return "Error fetching respiration data", 500
-    print("Respiration data fetched successfully")
+    logging.info("Respiration data fetched successfully")
 
-    print("Sending respiration data to /HEALTH-Respiration...")
+    logging.info("Sending respiration data to /HEALTH-Respiration...")
     response = requests.post("https://gcdp.azurewebsites.net/HEALTH-Respiration", json=respiration_data)
     if response.status_code == 200:
-        print("Respiration data sent successfully")
+        logging.info("Respiration data sent successfully")
         return "Respiration data sent successfully"
     else:
-        print(f"Error sending respiration data: {response.text}")
+        logging.error(f"Error sending respiration data: {response.text}")
         return f"Error sending respiration data: {response.text}", 500
 
 
@@ -210,7 +212,10 @@ def display_respiration_data():
         return "No respiration data available", 404
     return render_template("display_respiration_data.html", respiration_data=respiration_data)
 
-
+@app.route("/test")
+def test_route():
+    return "Test route is working"
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     app.run()

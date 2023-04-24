@@ -300,7 +300,6 @@ def home():
 
 #     return render_template("display_backfill_respiration_data.html", backfill_respiration_data=backfill_respiration_data)
 
-app = Flask(__name__)
 
 @app.route('/HEALTH-Respiration', methods=['POST'])
 def receive_respiration_backfill_notification():

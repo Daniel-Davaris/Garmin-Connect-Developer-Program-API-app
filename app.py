@@ -308,6 +308,7 @@ def receive_respiration_backfill_notification():
     data = request.json
     # Process the received data
     # ...
+    print("receive_respiration_backfill_notification ACTIVATED")
     print(data)
     return jsonify(status="success")
 

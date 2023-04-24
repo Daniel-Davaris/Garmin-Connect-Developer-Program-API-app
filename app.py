@@ -75,7 +75,13 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
     
 
    # url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"
-    
+    print("URL:", url)
+    print("Params:", {
+        'summaryStartTimeInSeconds': start_time,
+        'summaryEndTimeInSeconds': end_time,
+        'callbackEndpoint': urllib.parse.quote(callback_url)
+    })
+
     response = oauth.get(url)
 
     if response.status_code == 202:
@@ -84,6 +90,8 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
     else:
         print("Error requesting respiration backfill data:", response.text)
         return f'Error requesting respiration backfill data:{response.text}'
+
+
 
 
 

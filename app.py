@@ -70,8 +70,8 @@ def request_respiration_backfill_data(access_token, access_token_secret, start_t
     )
 
 
-    callback_url = "https://gcdp.azurewebsites.net/HEALTH-Respiration"
-    url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}&callbackEndpoint={urllib.parse.quote(callback_url)}"
+    #callback_url = "https://gcdp.azurewebsites.net/HEALTH-Respiration"
+    url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"
     
 
    # url = f"https://apis.garmin.com/wellness-api/rest/backfill/respiration?summaryStartTimeInSeconds={start_time}&summaryEndTimeInSeconds={end_time}"

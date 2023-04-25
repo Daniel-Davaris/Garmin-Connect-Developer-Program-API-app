@@ -340,7 +340,7 @@ def webhook():
 
 
 @app.route("/test", methods=["GET,POST"])
-def delete():
+def test():
     
   
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -350,7 +350,7 @@ def delete():
         print("All backfill requests have been cleared.")
     else:
         print(f"Failed to clear backfill requests. Status code: {response.status_code}")
-        
+
     return "<h1> Test </h1>"
 
 

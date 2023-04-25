@@ -322,9 +322,8 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time):
 def webhook1():
     # Parse the incoming JSON payload
     payload = request.json
-    df = pd.json_normalize(payload)
     print("New data recieved: ")
-    print(df)
+    print(payload)
     return "Good"
     # Check if the payload has the expected fields
     # if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
@@ -345,9 +344,9 @@ def webhook1():
 def webhook2():
     # Parse the incoming JSON payload
     payload = request.json
-    df = pd.json_normalize(payload)
+   
     print("New data recieved: ")
-    print(df)
+    print(payload)
     return "Good"
 
 

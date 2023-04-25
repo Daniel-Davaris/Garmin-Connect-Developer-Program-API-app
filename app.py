@@ -300,18 +300,54 @@ def home():
 
 #     return render_template("display_backfill_respiration_data.html", backfill_respiration_data=backfill_respiration_data)
 
+def fetch_respiration_summaries(upload_start_time, upload_end_time):
+    base_url = "https://apis.garmin.com/wellness-api/rest/respiration"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    params = {
+        "uploadStartTimeInSeconds": upload_start_time,
+        "uploadEndTimeInSeconds": upload_end_time
+    }
+    response = requests.get(base_url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        return response.json()  
+    else:
+        return None
 
-@app.route('/HEALTH-Respiration', methods=['POST'])
-def receive_respiration_backfill_notification():
-    # This route will be called by Garmin's service with a POST request when respiration backfill data is available
-    data = request.json
-    # Process the received data
-    # ...
-    print("receive_respiration_backfill_notification ACTIVATED")
-    print(data)
-    return jsonify(status="success")
+
+@app.route("/HEALTH-Respiration", methods=["POST"])
+def webhook():
+    # Parse the incoming JSON payload
+    payload = request.json
+
+    # Check if the payload has the expected fields
+    if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
+        upload_start_time = payload["uploadStartTimeInSeconds"]
+        upload_end_time = payload["uploadEndTimeInSeconds"]
+
+        # Fetch the respiration summaries using these timestamps
+        respiration_summaries = fetch_respiration_summaries(upload_start_time, upload_end_time)
+        
+        # Display or process the respiration summaries as needed
+        print(respiration_summaries)
+        
+        return jsonify({"message": "Received and processed respiration summaries"}), 200
+    else:
+        return jsonify({"message": "Invalid payload"}), 400
 
 
+@app.route("/delete", methods=["POST"])
+def delete():
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.delete("https://healthapi.garmin.com/v3/backfill/clear", headers=headers)
+
+    if response.status_code == 200:
+        print("All backfill requests have been cleared.")
+    else:
+        print(f"Failed to clear backfill requests. Status code: {response.status_code}")
 
 
 

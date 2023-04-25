@@ -300,40 +300,29 @@ def home():
 
 #     return render_template("display_backfill_respiration_data.html", backfill_respiration_data=backfill_respiration_data)
 
-def fetch_respiration_summaries(upload_start_time, upload_end_time):
-    base_url = "https://apis.garmin.com/wellness-api/rest/respiration"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-    params = {
-        "uploadStartTimeInSeconds": upload_start_time,
-        "uploadEndTimeInSeconds": upload_end_time
-    }
-    response = requests.get(base_url, headers=headers, params=params)
-    
-    if response.status_code == 200:
-        return response.json()  
-    else:
-        return None
 
-def fetch_respiration_summaries(upload_start_time, upload_end_time):
+
+def fetch_respiration_summaries(upload_start_time, upload_end_time, backfill=False):
     base_url = "https://apis.garmin.com/wellness-api/rest/respiration"
+    if backfill:
+        base_url = "https://apis.garmin.com/wellness-api/rest/backfill/respiration"
+
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
     }
     params = {
-        "uploadStartTimeInSeconds": upload_start_time,
-        "uploadEndTimeInSeconds": upload_end_time
+        "summaryStartTimeInSeconds": upload_start_time,
+        "summaryEndTimeInSeconds": upload_end_time
     }
     response = requests.get(base_url, headers=headers, params=params)
     
     if response.status_code == 200:
-        print("RESSSSSSSSSSSSSPONCEEE")
+        print("YESSSSSS")
         return response.json()
     else:
         return None
+
 
 
 @app.route("/HEALTH-Respiration", methods=["POST"])
@@ -357,14 +346,32 @@ def webhook1():
     else:
         return jsonify({"message": "Invalid payload"}), 400
 
-@app.route("/HEALTH-Sleeps", methods=["POST"])
-def webhook2():
-    # Parse the incoming JSON payload
-    payload = request.json
-   
-    print("New data recieved: ")
-    print(payload)
-    return "Good"
+
+
+@app.route("/request_backfill_data")
+def request_backfill_data():
+    # Define the time range for backfill data
+    start_time = int(time.time()) - (86400 * 110)  # 110 days ago
+    end_time = int(time.time()) - 86400 *100 # 100 day ago
+
+    # Fetch the backfill respiration summaries using these timestamps
+    backfill_respiration_summaries = fetch_respiration_summaries(start_time, end_time, backfill=True)
+
+    if backfill_respiration_summaries is not None:
+        # Save the backfill data in session
+        session["backfill_respiration_data"] = backfill_respiration_summaries
+        return "Backfill data requested and received."
+    else:
+        return "Error fetching backfill data."
+
+
+@app.route("/display_backfill_data")
+def display_backfill_data():
+    backfill_respiration_data = session.get("backfill_respiration_data", None)
+    if backfill_respiration_data is None:
+        return "No backfill data available", 404
+
+    return render_template("display_backfill_respiration_data.html", backfill_respiration_data=backfill_respiration_data)
 
 
 if __name__ == "__main__":

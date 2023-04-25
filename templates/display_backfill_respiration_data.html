@@ -1,33 +1,24 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Display Backfill Respiration Data</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="mt-5 mb-3">Backfill Respiration Data</h1>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Timestamp</th>
-            <th scope="col">Respiration Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in backfill_respiration_data %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Backfill Respiration Data</title>
+</head>
+<body>
+    <h1>Backfill Respiration Data</h1>
+    <table border="1">
+        <tr>
+            <th>Timestamp</th>
+            <th>Respiration Rate</th>
+        </tr>
+        {% for item in backfill_respiration_data %}
             <tr>
-              <td>{{ item.timestamp }}</td>
-              <td>{{ item.respirationRate }}</td>
+                <td>{{ item.timestamp }}</td>
+                <td>{{ item.respirationRate }}</td>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+        {% endfor %}
+    </table>
+</body>
 </html>

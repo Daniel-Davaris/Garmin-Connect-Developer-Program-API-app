@@ -339,9 +339,11 @@ def webhook():
         return jsonify({"message": "Invalid payload"}), 400
 
 def make_call():
+    print("start")
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.delete("https://healthapi.garmin.com/v3/backfill/clear", headers=headers)
-
+    print("after call")
+    print(response.text)
     if response.status_code == 200:
         print("All backfill requests have been cleared.")
     else:

@@ -322,21 +322,23 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time):
 def webhook():
     # Parse the incoming JSON payload
     payload = request.json
-
+    print("New data recieved: ")
+    print(payload)
+    return "Good"
     # Check if the payload has the expected fields
-    if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
-        upload_start_time = payload["uploadStartTimeInSeconds"]
-        upload_end_time = payload["uploadEndTimeInSeconds"]
+    # if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
+    #     upload_start_time = payload["uploadStartTimeInSeconds"]
+    #     upload_end_time = payload["uploadEndTimeInSeconds"]
 
-        # Fetch the respiration summaries using these timestamps
-        respiration_summaries = fetch_respiration_summaries(upload_start_time, upload_end_time)
+    #     # Fetch the respiration summaries using these timestamps
+    #     respiration_summaries = fetch_respiration_summaries(upload_start_time, upload_end_time)
         
-        # Display or process the respiration summaries as needed
-        print(respiration_summaries)
+    #     # Display or process the respiration summaries as needed
+    #     print(respiration_summaries)
         
-        return jsonify({"message": "Received and processed respiration summaries"}), 200
-    else:
-        return jsonify({"message": "Invalid payload"}), 400
+    #     return jsonify({"message": "Received and processed respiration summaries"}), 200
+    # else:
+    #     return jsonify({"message": "Invalid payload"}), 400
 
 def make_call():
     print("start")

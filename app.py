@@ -339,10 +339,19 @@ def webhook():
         return jsonify({"message": "Invalid payload"}), 400
 
 
-@app.route("/delete", methods=["POST"])
+@app.route("/test", methods=["GET,POST"])
 def delete():
-    return "<h1> Test </h1>"
+    
+  
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.delete("https://healthapi.garmin.com/v3/backfill/clear", headers=headers)
 
+    if response.status_code == 200:
+        print("All backfill requests have been cleared.")
+    else:
+        print(f"Failed to clear backfill requests. Status code: {response.status_code}")
+        
+    return "<h1> Test </h1>"
 
 
 if __name__ == "__main__":

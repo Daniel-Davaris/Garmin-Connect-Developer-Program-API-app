@@ -317,28 +317,45 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time):
     else:
         return None
 
+def fetch_respiration_summaries(upload_start_time, upload_end_time):
+    base_url = "https://apis.garmin.com/wellness-api/rest/respiration"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    params = {
+        "uploadStartTimeInSeconds": upload_start_time,
+        "uploadEndTimeInSeconds": upload_end_time
+    }
+    response = requests.get(base_url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        print("RESSSSSSSSSSSSSPONCEEE")
+        return response.json()
+    else:
+        return None
+
 
 @app.route("/HEALTH-Respiration", methods=["POST"])
 def webhook1():
     # Parse the incoming JSON payload
+    # Parse the incoming JSON payload
     payload = request.json
-    print("New data recieved: ")
     print(payload)
-    return "Good"
     # Check if the payload has the expected fields
-    # if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
-    #     upload_start_time = payload["uploadStartTimeInSeconds"]
-    #     upload_end_time = payload["uploadEndTimeInSeconds"]
+    if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
+        upload_start_time = payload["uploadStartTimeInSeconds"]
+        upload_end_time = payload["uploadEndTimeInSeconds"]
 
-    #     # Fetch the respiration summaries using these timestamps
-    #     respiration_summaries = fetch_respiration_summaries(upload_start_time, upload_end_time)
+        # Fetch the respiration summaries using these timestamps
+        respiration_summaries = fetch_respiration_summaries(upload_start_time, upload_end_time)
         
-    #     # Display or process the respiration summaries as needed
-    #     print(respiration_summaries)
+        # Display or process the respiration summaries as needed
+        print(respiration_summaries)
         
-    #     return jsonify({"message": "Received and processed respiration summaries"}), 200
-    # else:
-    #     return jsonify({"message": "Invalid payload"}), 400
+        return jsonify({"message": "Received and processed respiration summaries"}), 200
+    else:
+        return jsonify({"message": "Invalid payload"}), 400
 
 @app.route("/HEALTH-Sleeps", methods=["POST"])
 def webhook2():

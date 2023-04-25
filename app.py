@@ -319,7 +319,7 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time):
 
 
 @app.route("/HEALTH-Respiration", methods=["POST"])
-def webhook():
+def webhook1():
     # Parse the incoming JSON payload
     payload = request.json
     df = pd.json_normalize(payload)
@@ -342,7 +342,7 @@ def webhook():
     #     return jsonify({"message": "Invalid payload"}), 400
 
 @app.route("/HEALTH-Sleeps", methods=["POST"])
-def webhook():
+def webhook2():
     # Parse the incoming JSON payload
     payload = request.json
     df = pd.json_normalize(payload)

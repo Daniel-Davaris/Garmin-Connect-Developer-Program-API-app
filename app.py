@@ -321,6 +321,7 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time, backfill=Fal
         print("YESSSSSS")
         return response.json()
     else:
+        print(response.text)
         return None
 
 

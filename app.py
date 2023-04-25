@@ -15,7 +15,7 @@ import json
 from requests_oauthlib import OAuth1Session
 from flask import Flask, redirect, request, render_template, session, jsonify 
 import logging
-
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = 'lotus'
@@ -322,8 +322,9 @@ def fetch_respiration_summaries(upload_start_time, upload_end_time):
 def webhook():
     # Parse the incoming JSON payload
     payload = request.json
+    df = pd.json_normalize(payload)
     print("New data recieved: ")
-    print(payload)
+    print(df)
     return "Good"
     # Check if the payload has the expected fields
     # if "uploadStartTimeInSeconds" in payload and "uploadEndTimeInSeconds" in payload:
@@ -340,21 +341,14 @@ def webhook():
     # else:
     #     return jsonify({"message": "Invalid payload"}), 400
 
-def make_call():
-    print("start")
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.delete("https://healthapi.garmin.com/v3/backfill/clear", headers=headers)
-    print("after call")
-    print(response.text)
-    if response.status_code == 200:
-        print("All backfill requests have been cleared.")
-    else:
-        print(f"Failed to clear backfill requests. Status code: {response.status_code}")
-
-@app.route("/test")
-def test():
-    make_call()
-    return "<h1> Test </h1>"
+@app.route("/HEALTH-Sleeps", methods=["POST"])
+def webhook():
+    # Parse the incoming JSON payload
+    payload = request.json
+    df = pd.json_normalize(payload)
+    print("New data recieved: ")
+    print(df)
+    return "Good"
 
 
 if __name__ == "__main__":

@@ -349,6 +349,7 @@ def make_call():
 
 @app.route("/test")
 def test():
+    make_call()
     return "<h1> Test </h1>"
 
 
